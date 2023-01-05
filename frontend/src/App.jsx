@@ -26,9 +26,11 @@ function App() {
       .then((response) => response.json())
       .then((result) => {
         console.log('Success:', result);
+        document.getElementById("file_upload_response").innerHTML = result.response;
       })
       .catch((error) => {
         console.error('Error:', error);
+        document.getElementById("file_upload_response").innerHTML = "Error: file not uploaded";
       });
   };
 
@@ -38,89 +40,40 @@ function App() {
       'http://localhost:6969/word',
       {
         method: 'POST',
-        body: JSON.stringify(word),
+        body: word,
       }
     )
       .then((response) => response.json())
       .then((result) => {
         console.log('Success:', result);
+        let words = "";
+        for (let i = 0; i < result.response.length; i++) {
+          if (i != result.response.length - 1) 
+            words += result.response[i] + ", ";
+          else
+            words += result.response[i];
+        }
+        document.getElementById("word_upload_response").innerHTML = words;
       })
       .catch((error) => {
         console.error('Error:', error);
+        document.getElementById("word_upload_response").innerHTML = "Error";
       });
   }
 
   useEffect(() => {
-    // 👇️ use a ref (best)
     const el2 = ref.current;
     console.log(el2);
 
-    // 👇️ use document.getElementById()
-    // should only be used when you can't set a ref prop on the element
-    // (you don't have access to the element)
+    
     getDate();
   }, []);
 
-  /* var xhr = null;
-  const getXmlHttpRequestObject = function () {
-    if (!xhr) {
-      // Create a new XMLHttpRequest object 
-      xhr = new XMLHttpRequest();
-    }
-    return xhr;
-  }; */
-  /* function dataCallback() {
-    // Check response is ready or not
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      console.log("User data received!");
-      getDate();
-      let dataDiv = document.getElementById('result-container');
-      // Set current data text
-      dataDiv.innerHTML = xhr.responseText;
-    }
-  }
-  function getUsers() {
-    console.log("Get users...");
-    xhr = getXmlHttpRequestObject();
-    xhr.onreadystatechange = dataCallback;
-    // asynchronous requests
-    xhr.open("GET", "http://localhost:6969/users", true);
-    // Send the request over the network
-    xhr.send(null);
-  }
-  */
   function getDate() {
     let date = new Date().toString();
     document.getElementById('time_container').textContent
       = date;
   }
-
-  /* function sendDataCallback() {
-    // Check response is ready or not
-    if (xhr.readyState == 4 && xhr.status == 201) {
-      console.log("Data creation response received!");
-      getDate();
-      let dataDiv = document.getElementById('sent-data-container');
-      // Set current data text
-      dataDiv.innerHTML = xhr.responseText;
-    }
-  } */
-
-  /* function sendData() {
-    let dataToSend = document.getElementById('data-input').value;
-    if (!dataToSend) {
-      console.log("Data is empty.");
-      return;
-    }
-    console.log("Sending data: " + dataToSend);
-    xhr = getXmlHttpRequestObject();
-    xhr.onreadystatechange = sendDataCallback;
-    // asynchronous requests
-    xhr.open("POST", "http://localhost:6969/users", true);
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    // Send the request over the network
-    xhr.send(JSON.stringify({ "data": dataToSend }));
-  } */
 
   return (
     <div>
@@ -139,9 +92,11 @@ function App() {
       <div>
         <button onClick={handleSubmission}>Submit</button>
       </div>
+      <div id="file_upload_response"></div>
       <br />
       <input type="text" id="word_input"/>
       <button onClick={submitWord}>Submit</button>
+      <div id="word_upload_response"></div>
     </div>
   )
 }

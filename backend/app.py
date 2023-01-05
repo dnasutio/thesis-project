@@ -7,6 +7,8 @@ from process import *
 app = Flask(__name__)
 CORS(app)
 
+file = ""
+
 
 @app.route("/")
 def hello():
@@ -39,23 +41,27 @@ def users():
 
 @app.route('/upload', methods=['POST'])
 def upload_static_file():
+    global file
     print("Got request in static files") 
     print(request.files)
     f = request.files['File']
     print("Saved")
     f.save(f.filename)
-    
-    resp = {"success": True, "response": "file saved!"}
+    file = f.filename
+
+    resp = {"success": True, "response": "File saved!"}
     return flask.Response(response=json.dumps(resp), status=200)
 
 @app.route('/word', methods=['POST'])
 def upload_word():
+    global file
     print('Got request in text')
     print(request.data.decode())
     word = request.data.decode()
-    process_query(word)
+    print(file)
+    words = process_query(file, word)
     
-    resp = {"success": True, "response": "word saved!"}
+    resp = {"success": True, "response": words}
     return flask.Response(response=json.dumps(resp), status=200)
 
 
