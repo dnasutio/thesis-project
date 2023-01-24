@@ -27,7 +27,7 @@ def get_nth_key(dictionary, n=0):
             return key
     raise IndexError("dictionary index out of range") 
 
-def process_query(File, word_query):
+def process_query(File, word_query, numwords):
     global glove_model
     global tree
 
@@ -46,7 +46,7 @@ def process_query(File, word_query):
         print("Loading Tree")
 
     # process the query using the tree
-    dist, ind = tree.query([glove_model[word_query]], k=10)
+    dist, ind = tree.query([glove_model[word_query]], k = int(numwords))
     print(ind)
     neighbours = []
     for i in ind[0]:
@@ -57,4 +57,18 @@ def process_query(File, word_query):
     print(dist)
     return neighbours
 
-#process_query("glove.6B.300d.txt", "dog")
+def search_docs(words):
+  relevant_lines = []
+  file = open("Ottawa_Reddit_Posts.txt", "r")
+  for line in file:
+    for word in words:
+      if word in line:
+        relevant_lines.append(line)
+        print(line)
+        break
+  return relevant_lines
+      
+#search_docs(['sad','awful','sorry','sadly'])
+    
+
+

@@ -9,35 +9,9 @@ CORS(app)
 
 file = ""
 
-
 @app.route("/")
 def hello():
     return "Hello, World!"
-
-
-""" @app.route('/users', methods=["GET", "POST"])
-def users():
-    print("users endpoint reached...")
-    if request.method == "GET":
-        with open("users.json", "r") as f:
-            data = json.load(f)
-            data.append({
-                "username": "user4",
-                "pets": ["hamster"]
-            })
-
-            return flask.jsonify(data)
-
-    if request.method == "POST":
-        received_data = request.get_json()
-        print(f"received data: {received_data}")
-        message = received_data['data']
-        return_data = {
-            "status": "success",
-            "message": f"received: {message}"
-        }
-        return flask.Response(response=json.dumps(return_data), status=201) """
-
 
 @app.route('/upload', methods=['POST'])
 def upload_static_file():
@@ -57,12 +31,22 @@ def upload_word():
     global file
     print('Got request in text')
     print(request.data.decode())
-    word = request.data.decode()
+    msg = request.data.decode()
+    split_msg = msg.split()
+    word = split_msg[0]
+    numwords = split_msg[1]
     print(file)
-    words = process_query(file, word)
+    words = process_query(file, word, numwords)
     
     resp = {"success": True, "response": words}
     return flask.Response(response=json.dumps(resp), status=200)
+
+@app.route('/search', methods=['GET'])
+def search():
+  print('Got search request')
+  print(request.data.decode())
+  msg = request.data.decode()
+  relevant_lines = search_docs(msg)
 
 
 if __name__ == "__main__":
