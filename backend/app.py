@@ -48,6 +48,9 @@ def search():
   msg = request.data.decode()
   relevant_lines = search_docs(msg)
 
+  resp = {"success": True, "response": relevant_lines}
+  return flask.Response(response=json.dumps(resp), status=200)
+
 
 if __name__ == "__main__":
     app.run("localhost", 6969)

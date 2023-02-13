@@ -1,18 +1,20 @@
 import { useState } from 'react'
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css'
-import NearestWordsList from '../components/NearestWordsList';
+import NearestWordsList from './components/NearestWordsList';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [nearestWords, setNearestWords] = useState([]);
-  const nearestWordsRef = useRef();
+  const [checkedState, setCheckedState] = useState([]);
 
-  const getNearestWordsState = () => {
-    const nearestWordsState = nearestWordsRef.current.getChecked();
-    console.log(nearestWordsState);
+  const callback = payload => {
+    console.log("Payload: ", payload);
+    setCheckedState(payload);
+
+    console.log("Checked:", checkedState);
   }
 
   const changeHandler = (event) => {
@@ -47,15 +49,22 @@ function App() {
       body: msg,
     };
 
+    // something is wrong with setNearestWords (its like one render behind)
+    // if a render happens and search box contents doesn't change then it gets the correct value ("catches up")
     const response = await fetch('http://localhost:6969/word', settings);
     if (!response.ok) {
       throw new Error('Data coud not be fetched!')
     } else {
       let result = await response.json();
-      setNearestWords(await result.response)
+      console.log(result);
       console.log("Success: ", result.response);
-      console.log("Nearest: ", await nearestWords);
+      let words = result.response;
+      console.log("Words: ", words);
+      setNearestWords(await words);
+      console.log("Nearest: ", nearestWords);
     }
+
+    console.log("Nearest2: ", nearestWords);
   }
 
   const searchDocuments = async () => {
@@ -63,6 +72,7 @@ function App() {
       method: 'GET',
       body: msg,
     };
+
 
 
   }
@@ -105,8 +115,7 @@ function App() {
       <select id="numwords_input" hidden/>
       <button onClick={submitWord} id="submit_word" hidden>Submit</button>
       <div id="word_upload_response"></div>
-      <NearestWordsList nearestWords={nearestWords} ref={nearestWordsRef} />
-      <button onClick={getNearestWordsState}>Test</button>
+      <NearestWordsList nearestWords={nearestWords} callback={callback} />
       <button onClick={searchDocuments} id="search_docs" hidden>Search</button>
     </div>
   )
