@@ -10,13 +10,6 @@ function App() {
   const [nearestWords, setNearestWords] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
 
-  const callback = payload => {
-    console.log("Payload: ", payload);
-    setCheckedState(payload);
-
-    console.log("Checked:", checkedState);
-  }
-
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
     setIsFilePicked(true);
@@ -53,18 +46,12 @@ function App() {
     // if a render happens and search box contents doesn't change then it gets the correct value ("catches up")
     const response = await fetch('http://localhost:6969/word', settings);
     if (!response.ok) {
-      throw new Error('Data coud not be fetched!')
+      throw new Error('Data could not be fetched!')
     } else {
       let result = await response.json();
-      console.log(result);
-      console.log("Success: ", result.response);
-      let words = result.response;
-      console.log("Words: ", words);
-      setNearestWords(await words);
-      console.log("Nearest: ", nearestWords);
+      setNearestWords(result.response);
+      console.log("Words: ", nearestWords);
     }
-
-    console.log("Nearest2: ", nearestWords);
   }
 
   const searchDocuments = async () => {
@@ -91,6 +78,10 @@ function App() {
       document.getElementById('submit_word').removeAttribute("hidden");
       document.getElementById('search_docs').removeAttribute("hidden");
     }
+
+    if (nearestWords) {
+      console.log("Parent checked: ", checkedState);
+    }
   }, [fileUploaded, nearestWords]);
 
   return (
@@ -115,7 +106,7 @@ function App() {
       <select id="numwords_input" hidden/>
       <button onClick={submitWord} id="submit_word" hidden>Submit</button>
       <div id="word_upload_response"></div>
-      <NearestWordsList nearestWords={nearestWords} callback={callback} />
+      <NearestWordsList nearestWords={nearestWords} checkedState={checkedState} setCheckedState={setCheckedState} />
       <button onClick={searchDocuments} id="search_docs" hidden>Search</button>
     </div>
   )

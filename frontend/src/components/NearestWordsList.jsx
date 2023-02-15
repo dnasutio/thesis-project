@@ -1,23 +1,17 @@
 import { useEffect } from 'react';
-import { useState } from 'react'
 
-const NearestWordsList = ({ nearestWords, callback }) => {
-  const [checkedState, setCheckedState] = useState([]);
+const NearestWordsList = ({ nearestWords, checkedState, setCheckedState }) => {
 
   const handleOnChange = (position) => {
-    console.log("Before: ",  checkedState);
-    console.log("Words length: ", nearestWords.length);
-    console.log("Position: ", position);
     const updatedCheckedState = checkedState.map((item, index) => {
       index === position ? !item : item
+      console.log("----------------------------------");
+      console.log("Index: ", index, "; Position: ", position, "; Item: ", item, "; Index=Position?: ", index === position);
+      console.log("----------------------------------");
     });
-    console.log("Updated: ", updatedCheckedState);
 
     setCheckedState(updatedCheckedState);
-
-    // send the checked state to parent
-    console.log("Checked from nav: ", checkedState);
-    callback(checkedState);
+    console.log("Update checked: ", updatedCheckedState);
   }
 
   useEffect(() => {
@@ -26,14 +20,14 @@ const NearestWordsList = ({ nearestWords, callback }) => {
     for (let i = 0; i < nearestWords.length; i++) {
       bools.push(false);
     }
-    console.log(bools);
+    
     // reset array to nothing then set all elements to false
     setCheckedState(bools);
-
-    console.log("Nearest Changed: ", checkedState);
+    console.log("Reset checked: ", checkedState);
   }, [nearestWords]);
 
-  console.log("List: ", nearestWords);
+  console.log("Words from child: ", nearestWords);
+
   return (
     <div>
       <h3>Nearest Words</h3>
