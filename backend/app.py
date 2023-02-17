@@ -41,14 +41,17 @@ def upload_word():
     resp = {"success": True, "response": words}
     return flask.Response(response=json.dumps(resp), status=200)
 
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['POST'])
 def search():
   print('Got search request')
   print(request.data.decode())
   msg = request.data.decode()
-  relevant_lines = search_docs(msg)
+  print(f"Type {type(msg)}")
+  msg_list = json.loads(msg)
+  print(f"Type {type(msg_list)}")
+  relevant_lines = search_docs(msg_list)
 
-  resp = {"success": True, "response": relevant_lines}
+  resp = {"success": True, "response": json.dumps(relevant_lines)}
   return flask.Response(response=json.dumps(resp), status=200)
 
 

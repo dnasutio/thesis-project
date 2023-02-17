@@ -58,17 +58,20 @@ def process_query(File, word_query, numwords):
     return neighbours
 
 def search_docs(words):
+  print(words)
   relevant_lines = []
   file = open("Ottawa_Reddit_Posts.txt", "r")
   for line in file:
     for word in words:
       if word in line:
         relevant_lines.append(line)
-        print(line)
         break
+  
+  """ for i in range(5):
+      print(relevant_lines[i]) """
   return relevant_lines
       
-#search_docs(['sad','awful','sorry','sadly'])
+#search_docs(["sorcery","spiritualism","heresy"])
     
 
 

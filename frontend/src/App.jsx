@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
 import './App.css'
-import NearestWordsList from './components/NearestWordsList';
+//import NearestWordsList from './components/NearestWordsList';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
@@ -9,6 +9,18 @@ function App() {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [nearestWords, setNearestWords] = useState([]);
   const [checkedState, setCheckedState] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleOnChange = () => {
+    let updatedCheckedState = [];
+    let checkBoxes = document.querySelectorAll("ul#word-boxes li input");
+    for (let i = 0; i < checkBoxes.length; i++) {
+      updatedCheckedState.push(checkBoxes[i].checked);
+    }
+
+    setCheckedState(updatedCheckedState);
+    console.log("Update checked: ", updatedCheckedState);
+  }
 
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -55,11 +67,29 @@ function App() {
   }
 
   const searchDocuments = async () => {
+    let selectedWords = [];
+    for (let i = 0; i < nearestWords.length; i++) {
+      if (checkedState[i])
+        selectedWords.push(nearestWords[i]);
+    }
+    console.log(selectedWords);
+
+    let msg = JSON.stringify(selectedWords);
+    console.log(msg);
     const settings = {
-      method: 'GET',
+      method: 'POST',
       body: msg,
     };
 
+    const response = await fetch('http://localhost:6969/search', settings);
+    if (!response.ok) {
+      throw new Error('Data could not be fetched!')
+    } else {
+      let result = await response.json();
+      
+      console.log("Search results: ", result);
+      setSearchResults(JSON.parse(result.response));
+    }
 
 
   }
@@ -80,8 +110,16 @@ function App() {
     }
 
     if (nearestWords) {
-      console.log("Parent checked: ", checkedState);
+      // every time nearestWords changes we must create a new array with the correct number of elements and them to false 
+      let bools = [];
+      for (let i = 0; i < nearestWords.length; i++) {
+        bools.push(false);
+      }
+      
+      // reset array to nothing then set all elements to false
+      setCheckedState(bools);
     }
+    
   }, [fileUploaded, nearestWords]);
 
   return (
@@ -106,8 +144,49 @@ function App() {
       <select id="numwords_input" hidden/>
       <button onClick={submitWord} id="submit_word" hidden>Submit</button>
       <div id="word_upload_response"></div>
-      <NearestWordsList nearestWords={nearestWords} checkedState={checkedState} setCheckedState={setCheckedState} />
+
+      {/* <NearestWordsList nearestWords={nearestWords} checkedState={checkedState} setCheckedState={setCheckedState} /> */}
+      <div>
+        <h3>Nearest Words</h3>
+        <ul id="word-boxes">
+          {nearestWords.map((word, index) => {
+            return (
+              <li key={index}>
+                <div>
+                  <input 
+                    type="checkbox"
+                    onChange={() => handleOnChange()}
+                  />
+                  <label htmlFor={index}>{word}</label>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+        
       <button onClick={searchDocuments} id="search_docs" hidden>Search</button>
+
+      <div>
+        <h3>Search Results</h3>
+        <ul>
+          {searchResults.map((doc, index) => {
+            return (
+              <li key={index}>
+                <div>
+                  <p htmlFor={index}>{doc}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+
+
+      
+
+      
     </div>
   )
 }
