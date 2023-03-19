@@ -12,12 +12,8 @@ function App() {
         <div className="p-20">
 
             <FileUpload setFileUploaded={setFileUploaded} />
-            {fileUploaded && 
-                <div> 
-                    <NearestWords setNearestWords={setNearestWords} /> 
-                    <Search nearestWords={nearestWords} /> 
-                </div>
-            }
+            {fileUploaded && <NearestWords setNearestWords={setNearestWords} />}
+            {nearestWords.length != 0 && <Search nearestWords={nearestWords} /> }
 
         </div>
     )

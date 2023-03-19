@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 function Search({ nearestWords}) {
     const [checkedState, setCheckedState] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const handleChangeCheckBox = () => {
         let updatedCheckedState = [];
@@ -38,6 +39,7 @@ function Search({ nearestWords}) {
 
             console.log("Search results: ", result);
             setSearchResults(JSON.parse(result.response));
+            setCurrentPage(0)
         }
     }
 
@@ -55,34 +57,56 @@ function Search({ nearestWords}) {
         }
     }, [nearestWords]);
 
+    const handleNextPage = () => {
+        setCurrentPage(currentPage + 5);
+    }
+
+    const handlePreviousPage = () => {
+        if (currentPage != 0)
+            setCurrentPage(currentPage - 5);
+    }
+
     return (
         <>
-            <div className="block max-w-sm rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-700">
-                <h3>Nearest Words</h3>
-                <ul id="word-boxes">
-                    {nearestWords.map((word, index) => {
-                        return (
-                            <li key={index}>
-                                <div>
-                                    <input
-                                        type="checkbox"
-                                        onChange={() => handleChangeCheckBox()}
-                                    />
-                                    <label htmlFor={index}>{word}</label>
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
-                <button onClick={searchDocuments} id="search_docs">Search</button>
+            <div className="flex justify-center px-72">
+                <div className="grid grid-cols-1 place-items-start max-w-sm rounded-lg bg-white shadow-lg dark:bg-gray-700 px-6">
+                    <div className="p-4">
+                        <h3 className="text-gray-500 font-bold text-xl dark:text-gray-400">Nearest Words</h3>
+                        <ul id="word-boxes">
+                            {nearestWords.map((word, index) => {
+                                return (
+                                    <li key={index}>
+                                        <div>
+                                            <input
+                                                type="checkbox"
+                                                onChange={() => handleChangeCheckBox()}
+                                            />
+                                            <label className="text-gray-500 font-bold dark:text-gray-400" htmlFor={index}> {word}</label>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+            <div className="flex justify-center pr-72 pt-6">
+                <button id="search_docs" type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center ml-72 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={searchDocuments}>Search</button>
+            </div>
+
+            <div className="flex justify-center pr-72 pt-6">
+                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center ml-72 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={handlePreviousPage}>Previous Page</button>
+                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center ml-72 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={handleNextPage}>Next Page</button>
+            </div>
+
             <div className="flex justify-center px-72">
                 <ul>
-                    {searchResults.slice(0, 5).map((doc, index) => {
+                    {searchResults.slice(currentPage, currentPage + 5).map((doc, index) => {
                         return (
                             <li key={index}>
                                 <div>
-                                    <p htmlFor={index}>{index} {doc}</p>
+                                    <p htmlFor={index}>{currentPage + index + 1} {doc}</p>
                                     <br />
                                 </div>
                             </li>
