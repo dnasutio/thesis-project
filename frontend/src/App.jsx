@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
-import './App.css'
+
 //import NearestWordsList from './components/NearestWordsList';
 
 // TODO: Maybe use range slider instead of dropdown. Maybe abstract UI elements to their own component files.
@@ -233,15 +233,15 @@ function App() {
       </div>
         
       
-
-      <div className="flex justify-center">
-        <h3>Search Results</h3>
+      {/* Create variable to hold the first and second args for the slice (user can change them based on which "page" they want) */}
+      <div className="flex justify-center px-72">
         <ul>
-          {searchResults.map((doc, index) => {
+          {searchResults.slice(0, 5).map((doc, index) => {
             return (
               <li key={index}>
                 <div>
-                  <p htmlFor={index}>{doc}</p>
+                  <p htmlFor={index}>{index} {doc}</p>
+                  <br/>
                 </div>
               </li>
             );
